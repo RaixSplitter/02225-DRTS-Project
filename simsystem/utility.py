@@ -1,5 +1,6 @@
 from functools import reduce
-
+import math
+from simsystem.objects import Task
 
 def lcm(a, b):
     return abs(a*b) // math.gcd(a, b)

@@ -21,8 +21,8 @@ class Job:
     name: str
     cost: int
     computation_progress: int
-    absolute_release: int
-    absolute_deadline: int
+    release: int
+    deadline: int
     finish_time : int
     component_id: str
     priority: int
@@ -44,7 +44,7 @@ class Task:
     wcet: int
     period: int
     last_released: int
-    deadline: int
+    deadline_interval: int
     component_id: str
     priority: int
     
