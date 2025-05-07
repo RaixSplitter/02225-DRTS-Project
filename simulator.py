@@ -1,43 +1,24 @@
-from numpy import arange # stupid dependency but who cares
+import numpy as np # just for arange kinda dumb but who cares
 
-from objects import Core, Component, Task, HierarchicalSystem
-
-class Job:
-    """
-    Represents a job instance in the simulation.
-    """
-    def __init__(self, task: Task, release_time: float) -> None:
-        self.task = task
-        self.release_time = release_time
-        self.deadline = release_time + task.deadline
-        self.remaining_time = task.wcet
-        self.completion_time = None
-        
-    def is_complete(self) -> bool:
-        """Check if the job is complete."""
-        return self.remaining_time <= 0
-        
-    def get_response_time(self) -> None | float:
-        """Calculate the response time of the job."""
-        if self.completion_time is None:
-            return None
-        return self.completion_time - self.release_time
-    
-    def __lt__(self, other):
-        """For priority queue ordering."""
-        return self.deadline < other.deadline
-
+from objects import Core, Task, HierarchicalSystem, Job
+from schedulers import ComponentScheduler, SCHEDULERS
+from resources import BDRResourceSupplier, PRMResourceSupplier
 
 
 class SimulationEngine:
     """
     Simulates the execution of the hierarchical system.
     """
-    def __init__(self, system: HierarchicalSystem):
+    def __init__(self, system: HierarchicalSystem, scheduler_type: str = "EDF"):
         self.system = system
         self.jobs: list[Job] = []
         self.completed_jobs: list[Job] = []
-        self.response_times: dict = {}  # Task -> list of response times
+        self.response_times: dict[str, dict] = {}  # Task -> response time statistics
+        
+        # Create system-level schedulers for each core
+        self.system_schedulers: dict[str, SystemLevelScheduler] = {}
+        for core_id, core in system.cores.items():
+            self.system_schedulers[core_id] = SystemLevelScheduler(core, scheduler_type)
 
 
     def initialize_response_times(self) -> None:
@@ -51,155 +32,16 @@ class SimulationEngine:
 
 
     def release_jobs(self, time: float) -> None:
-        """ Release new jobs at the current simulation time. """
+        """
+        Release new jobs at the current simulation time.
+        
+        Args:
+            time: Current simulation time.
+        """
         for task_id, task in self.system.tasks.items():
             # Check if it's time to release a new job
             if time % task.period == 0:
                 self.jobs.append(Job(task, time))
-
-
-    def select_job_edf(self, available_jobs: list[Job]) -> None | Job:
-        """
-        Select the job with the earliest deadline.
-        
-        Args:
-            available_jobs: List of available jobs.
-            
-        Returns:
-            Selected job or None if no jobs available.
-        """
-        if not available_jobs:
-            return None
-        return min(available_jobs, key=lambda job: job.deadline)
-
-
-    def select_job_rm(self, available_jobs: list[Job]) -> Job | None:
-        """
-        Select the job with the highest RM priority.
-        
-        Args:
-            available_jobs: List of available jobs.
-            
-        Returns:
-            Selected job or None if no jobs available.
-        """
-        if not available_jobs:
-            return None
-            
-        # If priorities are explicitly specified, use them
-        if all(job.task.priority is not None for job in available_jobs):
-            return max(available_jobs, key=lambda job: job.task.priority)
-            
-        # Otherwise, use RM priority (shorter period = higher priority)
-        return min(available_jobs, key=lambda job: job.task.period)
-
-
-    def supply_resource_prm(self, component: Component, time: float, time_slice: float) -> float:
-        """
-        Simulate resource supply for a component based on its PRM parameters.
-        
-        Args:
-            component: Component to supply resources to.
-            time: Current simulation time.
-            time_slice: Time slice duration.
-            
-        Returns:
-            Amount of resource supplied.
-        """
-        budget = component.budget
-        period = component.period
-        
-        # Calculate time within the current period
-        time_in_period = time % period
-        
-        # Simplified supply model: resources are available at the beginning of each period
-        if time_in_period < budget:
-            return min(budget - time_in_period, time_slice)
-        return 0
-
-
-    def supply_resource_bdr(self, component: Component, time: float, time_slice: float) -> float:
-        """
-        Simulate resource supply for a component based on its BDR parameters.
-        
-        Args:
-            component: Component to supply resources to.
-            time: Current simulation time.
-            time_slice: Time slice duration.
-            
-        Returns:
-            Amount of resource supplied.
-        """
-        if component.bdr_interface is None:
-            return self.supply_resource_prm(component, time, time_slice)
-            
-        alpha, delta = component.bdr_interface
-        
-        # Simplified BDR supply model
-        if time > delta:
-            return alpha * time_slice
-        return 0
-    
-    def simulate_component(self, component: Component, time: float, time_slice: float) -> None:
-        """
-        Simulate execution of jobs within a component.
-        
-        Args:
-            component: Component to simulate.
-            time: Current simulation time.
-            time_slice: Time slice duration.
-        """
-        # Get available jobs for this component
-        available_jobs = [j for j in self.jobs if j.task.component_id == component.component_id]
-        
-        # No jobs to execute
-        if not available_jobs:
-            return
-            
-        # Determine the amount of resource to supply
-        resource_supply = self.supply_resource_prm(component, time, time_slice)
-        
-        # No resources available
-        if resource_supply <= 0:
-            return
-            
-        # Select job based on scheduling algorithm
-        selected_job = None
-        if component.scheduler == "EDF":
-            selected_job = self.select_job_edf(available_jobs)
-        else:  # RM
-            selected_job = self.select_job_rm(available_jobs)
-            
-        # Execute the selected job
-        if selected_job:
-            execution_time = min(resource_supply, selected_job.remaining_time)
-            selected_job.remaining_time -= execution_time
-            
-            # Check if job completed
-            if selected_job.is_complete():
-                selected_job.completion_time = time + execution_time
-                self.completed_jobs.append(selected_job)
-                self.jobs.remove(selected_job)
-                
-                # Record response time
-                task_id = selected_job.task.name
-                response_time = selected_job.get_response_time()
-                self.response_times[task_id]['values'].append(response_time)
-
-
-    def simulate_core(self, core: Core, time: float, time_slice: float) -> None:
-        """
-        Simulate execution on a core.
-        
-        Args:
-            core: Core to simulate.
-            time: Current simulation time.
-            time_slice: Time slice duration.
-        """
-        # For now, we'll just execute each component in sequence
-        # TODO: implement a system-level scheduler
-        for component in core.components:
-            self.simulate_component(component, time, time_slice)
 
 
     def simulate(self, duration: float, time_slice: float = 1.0, verbose: bool = False) -> dict:
@@ -216,16 +58,27 @@ class SimulationEngine:
         """
         print(f"Starting simulation for duration {duration}...")
         self.initialize_response_times()
-        
-        for time in arange(0, duration, time_slice):
-            
+
+        for time in np.arange(0, duration, time_slice):
             if verbose and int(time) % 100 == 0:
                 print(f"Simulation time: {time:.2f} / {duration:.2f}")
             
+            # Release new jobs
             self.release_jobs(time)
             
-            for core_id, core in self.system.cores.items():
-                self.simulate_core(core, time, time_slice)
+            # Simulate execution on each core using system-level schedulers
+            for core_id, system_scheduler in self.system_schedulers.items():
+                completed_jobs = system_scheduler.simulate(self.jobs, time, time_slice)
+                
+                # Record response times
+                for job in completed_jobs:
+                    task_id = job.task.name
+                    response_time = job.get_response_time()
+                    if task_id in self.response_times:
+                        self.response_times[task_id]['values'].append(response_time)
+                
+                # Add completed jobs to the list
+                self.completed_jobs.extend(completed_jobs)
         
         # Calculate response time statistics
         for task_id, data in self.response_times.items():
@@ -238,3 +91,89 @@ class SimulationEngine:
         
         print("Simulation completed.")
         return self.response_times
+
+
+
+class SystemLevelScheduler:
+    """
+    System-level scheduler for managing components on a core.
+    """
+    def __init__(self, core: Core, scheduler_type: str = "EDF"):
+        self.core = core
+        
+        # Create component schedulers
+        self.component_schedulers = {}
+        for component in core.components:
+            # Use BDR resource supplier if BDR interface is set, otherwise use PRM
+            if component.bdr_interface:
+                supplier = BDRResourceSupplier()
+            else:
+                supplier = PRMResourceSupplier()
+
+            self.component_schedulers[component.component_id] = ComponentScheduler(component, supplier)
+
+        # Create the system-level scheduler based on configuration
+        self.scheduler = SCHEDULERS.get(scheduler_type)
+        if self.scheduler is None:
+            return ValueError(f"Got invalid scheduler, expected on of {SCHEDULERS.keys()}, got: {scheduler_type}")
+
+
+    def simulate(self, jobs: list[Job], time: float, time_slice: float) -> list[Job]:
+        """
+        Simulate execution on this core, scheduling components using the system-level scheduler.
+        
+        Args:
+            jobs: List of all jobs in the system.
+            time: Current simulation time.
+            time_slice: Time slice duration.
+            
+        Returns:
+            List of completed jobs.
+        """
+        # Create virtual jobs representing components
+        component_jobs = []
+        for component_id, component_scheduler in self.component_schedulers.items():
+            component = component_scheduler.component
+            
+            # Create a virtual deadline based on component's period
+            # This is a simplification - in a real system, this would be more complex
+            virtual_deadline = time + component.period
+            
+            # Count jobs for this component to determine priority
+            component_job_count = len([j for j in jobs if j.task.component_id == component_id])
+            
+            if component_job_count > 0:
+                # Create a virtual job representing this component
+                virtual_job = Job(
+                    task = Task(
+                        name = f"Component_{component_id}", 
+                        wcet = component.budget,
+                        period = component.period, 
+                        component_id = "SYSTEM",
+                        scheduler = "N/A"
+                    ),
+                    release_time = time,
+                    deadline = virtual_deadline
+                )
+                component_jobs.append((virtual_job, component_id))
+        
+        # No components with jobs to execute
+        if not component_jobs:
+            return []
+        
+        # Select component to execute using system-level scheduler
+        selected_component_job = self.scheduler.select_job([j for j, _ in component_jobs])
+        completed_jobs = []
+        
+        if selected_component_job:
+            # Find the component ID for the selected virtual job
+            for virtual_job, component_id in component_jobs:
+                if virtual_job == selected_component_job:
+                    # Execute the selected component
+                    component_scheduler = self.component_schedulers[component_id]
+                    completed_jobs.extend(component_scheduler.simulate(jobs, time, time_slice))
+                    break
+        
+        return completed_jobs
+
+

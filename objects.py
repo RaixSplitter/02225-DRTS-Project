@@ -108,4 +108,36 @@ class HierarchicalSystem:
                 continue
             # Adjust WCET: slower core (speed < 1) increases WCET
             task.wcet = task.wcet / core.speed_factor
+
+
+@dataclass
+class Job:
+    """
+    Represents a job instance in the simulation.
+    """
+    task: Task
+    release_time: float
+    deadline: float
+    remaining_time: float
+    completion_time: None | float = None
     
+    def __init__(self, task: Task, release_time: float, deadline: float | None = None) -> None:
+        self.task = task
+        self.release_time = release_time
+        self.deadline = release_time + task.deadline if deadline is None else deadline
+        self.remaining_time = task.wcet
+        self.completion_time = None
+        
+    def is_complete(self) -> bool:
+        """Check if the job is complete."""
+        return self.remaining_time <= 0
+        
+    def get_response_time(self) -> None | float:
+        """Calculate the response time of the job."""
+        if self.completion_time is None:
+            return None
+        return self.completion_time - self.release_time
+    
+    def __lt__(self, other):
+        """For priority queue ordering."""
+        return self.deadline < other.deadline
