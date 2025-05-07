@@ -1,16 +1,17 @@
 from dataclasses import dataclass
-from simsystem.schedulers import RM, EDF 
+
+from typing import Callable
 
 @dataclass
 class Core:
     core_id : str
     speed_factor : float
-    scheduler : RM | EDF
+    scheduler : Callable[[list["Job"]], "Job | None"]
 
 @dataclass
 class Component:
     component_id : str
-    scheduler : RM | EDF
+    scheduler : Callable[[list["Job"]], "Job | None"]
     budget : int
     period : int
     core_id : str
@@ -43,10 +44,12 @@ class Task:
     name: str
     wcet: int
     period: int
-    last_released: int
     deadline_interval: int
     component_id: str
     priority: int
+    
+    last_released: int = 0
+    
     
     @staticmethod
     def compute_cost(wcet : int) -> int:
