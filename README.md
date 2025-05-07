@@ -62,4 +62,10 @@ Log files can be found in the `outputs` folder and are generated and managed by 
 
 ### TODO List
 
-- [ ] Mercury
+- [ ] Input Model
+- [ ] Simulator (Hierarchical Scheduling) [COMPOSITIONAL FRAMEWORK FOR HSS] Section 3.3
+- [ ] Implementation of Resource Supply Parameters
+- [ ] Reports of observed response times
+- [ ] Analysis tool BDR
+- [ ] DBFs: EDF FPS Schedulers
+- [ ] Supply bound function Section 3.3.2
