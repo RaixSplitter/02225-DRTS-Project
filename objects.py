@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 @dataclass
 class Task:
@@ -28,7 +28,7 @@ class Component:
     budget: float
     period: float
     core_id: str
-    tasks: list[Task] = []
+    tasks: list[Task] = field(default_factory=list)
     bdr_interface: None | tuple[float, float] = None
 
     def add_task(self, task: Task) -> None:
@@ -46,7 +46,7 @@ class Core:
     """
     core_id: str
     speed_factor: float
-    components: list[Component] = []
+    components: list[Component] = field(default_factory=list)
         
     def add_component(self, component: Component) -> None:
         self.components.append(component)
@@ -57,16 +57,16 @@ class HierarchicalSystem:
     """
     Represents the entire hierarchical scheduling system.
     """
-    cores: dict[str, Core] = {}
-    components: dict[str, Component] = {}
-    tasks: dict[str, Task] = {}
+    cores: dict[str, Core] = field(default_factory=dict)
+    components: dict[str, Component] = field(default_factory=dict)
+    tasks: dict[str, Task] = field(default_factory=dict)
 
     def build(self, cores: dict, components: dict, tasks: dict) -> None:
         """
         Build the hierarchical system from parsed data.
         """
         for core_id, core_data in cores.items():
-            self.cores[core_id] = Core(core_id, core_data['speed_factor'])
+            self.cores[core_id] = Core(core_id, speed_factor=core_data['speed_factor'])
         
         for comp_id, comp_data in components.items():
             component = Component(
