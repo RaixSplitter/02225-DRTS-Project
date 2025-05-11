@@ -46,7 +46,7 @@ class Task:
     period: int
     deadline_interval: int
     component_id: str
-    priority: int
+    priority: int = None # Priority is not set by default
     
     last_released: int = 0
     
