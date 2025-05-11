@@ -15,7 +15,7 @@ class Component:
     budget : int
     period : int
     core_id : str
-    priority : int
+    priority : int = None
     
 @dataclass
 class Job:
