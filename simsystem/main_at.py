@@ -33,6 +33,10 @@ def main(cfg: ExperimentConfig) -> None:
     logger.info(f"Loaded architecture: {cores}")
     logger.info(f"Loaded budgets: {components}")
     logger.info(f"Loaded tasks: {tasks}")
+    
+    bdr_schedulability_all = at.bdr_schedulability_all(list(components.values()), list(cores.values()))
+    
+    print(bdr_schedulability_all)
 
 if __name__ == "__main__":
 

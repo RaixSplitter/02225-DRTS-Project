@@ -77,18 +77,14 @@ def bdr_core(core: Core) -> tuple[float, int]:
     R = (alpha, delta)
     return R
 
-def bdr_interface(component : Component, core: Core) -> tuple[float, int]:
+def bdr_interface(component : Component) -> tuple[float, int]:
     """
     Computes the Bounded Delay Resource (BDR) interface for a given component and core.
     Note that the Component and Core should share the same core_id.
     """
     
-    # Assert that the component and core share the same core_id
-    if component.core_id != core.core_id:
-        raise ValueError("Component and Core must share the same core_id")
-    
     Q = component.budget
-    P = core.speed_factor
+    P = component.period
     alpha = Q / P
     delta = 2 * (P - Q)
     R = (alpha, delta)
@@ -104,13 +100,94 @@ def required_bdr(components : list[Component], core: Core) -> tuple[float, int]:
     if not all(component.core_id == core.core_id for component in components):
         raise ValueError("All components must share the same core_id as the core")
     
-    Q = sum(component.budget for component in components)
-    P = core.speed_factor
-    alpha = Q / P
-    delta = 2 * (P - Q)
+    R_i = [bdr_interface(component) for component in components]
+    alpha = sum(r[0] for r in R_i)
+    delta = min(r[1] for r in R_i)
+    
     R = (alpha, delta)
+    
     return R
 
+def bdr_schedulability(components: list[Component], core : Core) -> bool:
+    """
+    Checks if the Bounded Delay Resource (BDR) is schedulable for a list of components and a core.
+    Note that the Component and Core should share the same core_id.
+    """
+    
+    logger.info(f"Checking BDR schedulability for core {core.core_id} and components {components}")
+    
+    # Assert that all components share the same core_id
+    if not all(component.core_id == core.core_id for component in components):
+        raise ValueError("All components must share the same core_id as the cores")
+    
+    # Calculate the required BDR
+    required_R = required_bdr(components, core)
+    
+    logger.info(f"Required BDR: {required_R}")
+    
+    # Calculate the available BDR
+    available_R = bdr_core(core)
+    
+    logger.info(f"Available BDR: {available_R}")
+    
+    alpha_required, delta_required = required_R
+    alpha_available, delta_available = available_R
+    
+    # Check if the required BDR is less than or equal to the available BDR according to Theorem 3.1
+    return alpha_required <= alpha_available and delta_required > delta_available
+
+def bdr_schedulability_all(components: list[Component], cores: list[Core]) -> bool:
+    """
+    Checks if the Bounded Delay Resource (BDR) is schedulable for a list of components and cores.
+    """
+    
+    # Group components by core
+    core_to_components = {}
+    for component in components:
+        if component.core_id not in core_to_components:
+            core_to_components[component.core_id] = []
+        core_to_components[component.core_id].append(component)
+
+    # Check schedulability for each core and its associated components
+    for core in cores:
+        if core.core_id not in core_to_components:
+            continue
+        if not bdr_schedulability(core_to_components[core.core_id], core):
+            return False
+        
+    
+    return True
+
+def schedulability_test(tasks: dict[str, Task], components: dict[str, Component], cores: dict[str, Core]) -> bool:
+    """
+    Checks if the system is schedulable based on the Bounded Delay Resource (BDR) model.
+    
+    Arguments:
+        tasks: list of tasks
+        components: list of components
+        cores: list of cores
+    """
+    
+    # Check if the system is schedulable based on BDR
+    if not bdr_schedulability_all(list(components.values()), list(cores.values())):
+        return False
+    
+    # Check if task is schedulable by it's component
+    for task in tasks:
+        component = components[task.component_id]
+        
+        R, delta = bdr_interface(component)
+        sbf_component = sbf_bdr(R, t=task.deadline_interval)
+        
+        dbf_task = dbf_edf(list(tasks.values()), t=task.deadline_interval)
+        
+        if dbf_task > sbf_component:
+            logger.error(f"Task {task.name} is not schedulable by component {component.name}")
+            return False
+    return True
+
+
+    
 def sbf_bdr(R, t):
     """
     Supply Bound Function (SBF) for Bounded Delay Resource (BDR)
