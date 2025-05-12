@@ -311,13 +311,20 @@ class AnalysisEngine:
         
         best_alpha = initial_alpha
         best_delta = initial_delta
-        best_cost = c1 * best_alpha + c2 * (1.0 / best_delta)
+        
+        
+        
+        best_cost = c1 * best_alpha + c2 * (1.0 / best_delta) if best_delta != 0 else float('inf')
         
         # Simple optimization: incrementally increase alpha until schedulable
         alpha = initial_alpha
         while alpha <= 1.0:
             # Compute corresponding delta with the Half-Half algorithm
             delta = 2.0 * (component.period * alpha - component.budget)
+            
+            if delta == 0:
+                alpha += alpha_increment
+                continue
             
             # Check schedulability
             if component.scheduler == "RM":
@@ -470,7 +477,7 @@ class OutputGenerator:
             Path to the generated output file.
         """
         print(f"Generating detailed report to {output_file}...")
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding='utf-8') as f:
             f.write("Hierarchical Schedulability Analysis Report\n")
             f.write("=========================================\n\n")
             
@@ -512,7 +519,7 @@ def main():
     """
     Main function to run the hierarchical schedulability analysis.
     """
-    test_case = "5-huge-test-case"
+    test_case = "4-large-test-case"
     parser = argparse.ArgumentParser(description='Hierarchical Schedulability Analysis System')
     parser.add_argument('--tasks', default=f'test-cases/{test_case}/tasks.csv', help='Tasks CSV file')
     parser.add_argument('--architecture', default=f'test-cases/{test_case}/architecture.csv', help='Architecture CSV file')
@@ -520,7 +527,7 @@ def main():
     parser.add_argument('--output', default='solution.csv', help='Output CSV file')
     parser.add_argument('--report', default='detailed_report.txt', help='Detailed report file')
     parser.add_argument('--verbose', action='store_true', help='Print verbose output')
-    parser.add_argument('--optimize', action='store_true', help='Optimize BDR parameters')
+    parser.add_argument('--optimize', default = 'true', action='store_true', help='Optimize BDR parameters')
     parser.add_argument('--sim-time', type=float, default=0, help='Simulation duration (0 = use hyperperiod)')
     parser.add_argument('--time-slice', type=float, default=1.0, help='Simulation time slice')
     

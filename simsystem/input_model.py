@@ -59,10 +59,11 @@ class Input_Model:
             name=row["task_name"],
             wcet=row["wcet"],
             period=row["period"],
-            deadline_interval=row["period"], # Assuming deadline is equal to period
+            deadline=row["period"], # Assuming deadline is equal to period
             component_id=row["component_id"],
             priority=row["priority"],
             )
+            
             tasks[row["task_name"]] = task
 
         return tasks

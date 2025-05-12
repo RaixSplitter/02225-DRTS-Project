@@ -4,8 +4,8 @@ import math
 
 logger = logging.getLogger(__name__)
 
-
-def dbf_edf(W: list[Task], t: int) -> int:
+#region DBF
+def dbf_edf(W: list[Task], t: int, speed_factor) -> int:
     """
     Demand Bound Function (EDF), the implementation is for an explicit deadline, 
     note that the implicit deadline is a special case of explicit deadline, 
@@ -24,16 +24,16 @@ def dbf_edf(W: list[Task], t: int) -> int:
     dbf = 0
     for task in W:
         # Extract task parameters
-        C_i = task.wcet
+        C_i = task.wcet / speed_factor
         T_i = task.period
-        D_i = task.deadline_interval
+        D_i = task.deadline
 
         # Find tasks with deadlines within time interval
-        if task.deadline_interval <= t:
+        if task.deadline <= t:
             dbf += ((t + T_i - D_i) // T_i) * C_i #Equation 3.3 in the handbook
     return dbf
 
-def dbf_rm(W: list[Task], t: int, idx : int) -> int:
+def dbf_rm(W: list[Task], t: int, idx : int, speed_factor) -> int:
     """
     Demand Bound Function (RM)
 
@@ -51,16 +51,38 @@ def dbf_rm(W: list[Task], t: int, idx : int) -> int:
     prio_threshold = W[idx].priority
     HP_tasks = [task for task in W if task.priority < prio_threshold] # Gather Strictly High Priority tasks
     
-    dbf = W[idx].wcet # The task itself is always in the interval
+    dbf = W[idx].wcet / speed_factor # The task itself is always in the interval
     for task in HP_tasks:
         # Extract task parameters
-        C_k = task.wcet
+        C_k = task.wcet / speed_factor
         T_k = task.period
 
         # Find tasks with deadlines within time interval
-        if task.deadline_interval <= t:
+        if task.deadline <= t:
             dbf += math.ceil(t / T_k) * C_k #Equation 3.3 in the handbook
     return dbf
+#endregion
+
+def sbf_bdr(R, t):
+    """
+    Supply Bound Function (SBF) for Bounded Delay Resource (BDR)
+
+    Arguments:
+        R: list of tasks
+        t: time interval
+    """
+    # Assert that the time interval is valid
+    if t <= 0:
+        return 0
+    
+    alpha, delta = R
+    
+    if t >= delta:
+        sbf = alpha * (t - delta)
+    else:
+        sbf = 0
+    
+    return sbf
 
 def bdr_core(core: Core) -> tuple[float, int]:
     """
@@ -72,9 +94,7 @@ def bdr_core(core: Core) -> tuple[float, int]:
     if not isinstance(core, Core):
         raise ValueError("Invalid core object")
     
-    alpha = core.speed_factor # Assuming the budget is equal to the speed factor for a core, due to a core being a root component
-    delta = 0 # Assuming no delay for the core in an ideal scenario
-    R = (alpha, delta)
+    R = (1, -1e-9) # Default values for alpha and delta
     return R
 
 def bdr_interface(component : Component) -> tuple[float, int]:
@@ -114,7 +134,7 @@ def bdr_schedulability(components: list[Component], core : Core) -> bool:
     Note that the Component and Core should share the same core_id.
     """
     
-    logger.info(f"Checking BDR schedulability for core {core.core_id} and components {components}")
+    logger.debug(f"Checking BDR schedulability for core {core.core_id} and components {components}")
     
     # Assert that all components share the same core_id
     if not all(component.core_id == core.core_id for component in components):
@@ -123,12 +143,12 @@ def bdr_schedulability(components: list[Component], core : Core) -> bool:
     # Calculate the required BDR
     required_R = required_bdr(components, core)
     
-    logger.info(f"Required BDR: {required_R}")
+    logger.debug(f"Required BDR: {required_R}")
     
     # Calculate the available BDR
     available_R = bdr_core(core)
     
-    logger.info(f"Available BDR: {available_R}")
+    logger.debug(f"Available BDR: {available_R}")
     
     alpha_required, delta_required = required_R
     alpha_available, delta_available = available_R
@@ -136,27 +156,56 @@ def bdr_schedulability(components: list[Component], core : Core) -> bool:
     # Check if the required BDR is less than or equal to the available BDR according to Theorem 3.1
     return alpha_required <= alpha_available and delta_required > delta_available
 
-def bdr_schedulability_all(components: list[Component], cores: list[Core]) -> bool:
+def find_critical_time_points_rm(tasks: list[Task], task_index: int) -> list[float]:
     """
-    Checks if the Bounded Delay Resource (BDR) is schedulable for a list of components and cores.
-    """
-    
-    # Group components by core
-    core_to_components = {}
-    for component in components:
-        if component.core_id not in core_to_components:
-            core_to_components[component.core_id] = []
-        core_to_components[component.core_id].append(component)
+    Find critical time points for RM schedulability analysis.
 
-    # Check schedulability for each core and its associated components
-    for core in cores:
-        if core.core_id not in core_to_components:
-            continue
-        if not bdr_schedulability(core_to_components[core.core_id], core):
-            return False
-        
+    Args:
+        tasks: List of tasks sorted by RM priority.
+        task_index: Index of the task to analyze.
+
+    Returns:
+        List of critical time points.
+    """
+    # Sort tasks by priority (lower value indicates higher priority)
+    tasks.sort(key=lambda t: t.priority)
+    task = tasks[task_index]
+    higher_priority_tasks = tasks[:task_index]
     
-    return True
+    # Initial set of points: all task periods and their multiples up to task's deadline
+    points = set()
+    for hp_task in higher_priority_tasks:
+        k = 1
+        while k * hp_task.period <= task.deadline:
+            points.add(k * hp_task.period)
+            k += 1
+
+    # Add the task's own deadline
+    points.add(task.deadline)
+
+    return sorted(list(points))
+    
+def find_critical_time_points_edf(tasks: list[Task], hyperperiod: float) -> list[float]:
+    """
+    Find critical time points for EDF schedulability analysis.
+    
+    Args:
+        tasks: List of tasks.
+        hyperperiod: Hyperperiod of all tasks.
+        
+    Returns:
+        List of critical time points.
+    """
+    # Critical points are at all job deadlines within the hyperperiod
+    points = set()
+    
+    for task in tasks:
+        k = 1
+        while k * task.period <= hyperperiod:
+            points.add(k * task.period)  # Using implicit deadlines
+            k += 1
+    
+    return sorted(list(points))
 
 def schedulability_test(tasks: dict[str, Task], components: dict[str, Component], cores: dict[str, Core]) -> bool:
     """
@@ -168,43 +217,89 @@ def schedulability_test(tasks: dict[str, Task], components: dict[str, Component]
         cores: list of cores
     """
     
-    # Check if the system is schedulable based on BDR
-    if not bdr_schedulability_all(list(components.values()), list(cores.values())):
-        return False
+    schedulability = True
+    core_schedulability = {}
+    component_schedulability = {}
+    task_schedulability = {}
     
-    # Check if task is schedulable by it's component
-    for task in tasks:
-        component = components[task.component_id]
+    # # Check if the system is schedulable based on BDR
+    # if not bdr_schedulability_all(list(components.values()), list(cores.values())):
+    #     return False
+    
+    #region 1: Assign tasks to components and components to cores
+    # Assign tasks to components
+    for task in tasks.values():
+        components[task.component_id].add_task(task)
+
+    # Assign components to cores
+    for component in components.values():
+        cores[component.core_id].add_component(component)
+    #endregion
+    
+    for core in cores.values():
+        logger.debug("Evaluating", core.core_id) 
+        for component in core.components:
+            logger.debug("Evaluating", component.component_id)
+            
+            R = bdr_interface(component)
+            
+            alpha, delta = R
+            
+            for task_idx, task in enumerate(component.tasks):
+                
+                task_schedulable = False
+                
+                if component.scheduler == "RM":
+                    ts = find_critical_time_points_rm(component.tasks, task_idx)
+                    
+                    for t in ts:
+                        sbf_component = sbf_bdr(R, t)
+                        dbf_task = dbf_rm(component.tasks, t, task_idx, core.speed_factor)
+                        logger.debug(sbf_component, dbf_task)
+                        if sbf_component >= dbf_task:
+                            logger.info(f"Task {task.name} is schedulable at time {t} with SBF: {sbf_component} >= DBF: {dbf_task}")
+                            task_schedulable = True
+                            task_schedulability[task.name] = True
+                            break
+                    else:
+                        logger.info(f"Task {task.name} is not schedulable at time {t} with SBF: {sbf_component} < DBF: {dbf_task}")
+                        task_schedulability[task.name] = False
+                    
+                elif component.scheduler == "EDF":
+                    ts = find_critical_time_points_edf(component.tasks, component.hyperperiod)
+                    
+                    for t in ts:
+                        sbf_component = sbf_bdr(R, t)
+                        dbf_task = dbf_rm(component.tasks, t, task_idx, core.speed_factor)
+                        if sbf_component < dbf_task:
+                            logger.info(f"Task {task.name} is not schedulable at time {t} with SBF: {sbf_component} < DBF: {dbf_task}")
+                            task_schedulability[task.name] = False
+                            break
+                    else:
+                        logger.info(f"Task {task.name} is schedulable at time {t} with SBF: {sbf_component} >= DBF: {dbf_task}")
+                        task_schedulable = True
+                        task_schedulability[task.name] = True
+                        break
+                        
+                else:
+                    raise ValueError(f"Unknown scheduler: {component.scheduler}")
+                
+            # If any task in the component is not schedulable, the component is not schedulable
+            component_schedulability[component.component_id] = all(task_schedulability.values())
+            logger.info(f"Component {component.component_id} is schedulable: {component_schedulability[component.component_id]}")
         
-        R, delta = bdr_interface(component)
-        sbf_component = sbf_bdr(R, t=task.deadline_interval)
+        # If any component in the core is not schedulable, the core is not schedulable and it has to pass the BDR check
+        #BDR Check
+        bdr_check = bdr_schedulability(core.components, core)
+        core_schedulability[core.core_id] = all(component_schedulability.values()) if bdr_check else False
+        logger.info(f"Core {core.core_id} is schedulable: {core_schedulability[core.core_id]}, BDR: {bdr_check}")
         
-        dbf_task = dbf_edf(list(tasks.values()), t=task.deadline_interval)
+    return all(core_schedulability.values()), core_schedulability, component_schedulability, task_schedulability
         
-        if dbf_task > sbf_component:
-            logger.error(f"Task {task.name} is not schedulable by component {component.name}")
-            return False
-    return True
+                
+                
+            
+    
 
 
     
-def sbf_bdr(R, t):
-    """
-    Supply Bound Function (SBF) for Bounded Delay Resource (BDR)
-
-    Arguments:
-        R: list of tasks
-        t: time interval
-    """
-    # Assert that the time interval is valid
-    if t <= 0:
-        return 0
-    
-    alpha, delta = R
-    
-    if t >= delta:
-        sbf = alpha * (t - delta)
-    else:
-        sbf = 0
-    
-    return sbf

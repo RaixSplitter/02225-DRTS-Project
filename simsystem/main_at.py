@@ -34,7 +34,7 @@ def main(cfg: ExperimentConfig) -> None:
     logger.info(f"Loaded budgets: {components}")
     logger.info(f"Loaded tasks: {tasks}")
     
-    bdr_schedulability_all = at.bdr_schedulability_all(list(components.values()), list(cores.values()))
+    bdr_schedulability_all = at.schedulability_test(tasks, components, cores)
     
     print(bdr_schedulability_all)
 
