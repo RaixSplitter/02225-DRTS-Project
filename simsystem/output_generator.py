@@ -1,6 +1,9 @@
 import pandas as pd
 from typing import Dict
 from simsystem.objects import HierarchicalSystem
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class OutputGenerator:
@@ -22,7 +25,7 @@ class OutputGenerator:
         Returns:
             Path to the generated output file.
         """
-        print(f"Generating CSV output to {output_file}...")
+        logger.info(f"Generating CSV output to {output_file}...")
         output_data = []
         
         for task_id, task in self.system.tasks.items():
@@ -50,7 +53,7 @@ class OutputGenerator:
         df = pd.DataFrame(output_data)
         df.to_csv(output_file, index=False)
         
-        print(f"CSV output generated: {output_file}")
+        logger.info(f"CSV output generated: {output_file}")
         return output_file
     
     def generate_detailed_report(self, output_file: str = "detailed_report.txt") -> str:
@@ -63,7 +66,7 @@ class OutputGenerator:
         Returns:
             Path to the generated output file.
         """
-        print(f"Generating detailed report to {output_file}...")
+        logger.info(f"Generating detailed report to {output_file}...")
         with open(output_file, "w", encoding='utf-8') as f:
             f.write("Hierarchical Schedulability Analysis Report\n")
             f.write("=========================================\n\n")
@@ -97,6 +100,6 @@ class OutputGenerator:
                     f.write(f"    Avg Response Time: {response_data['avg']:.4f}\n")
                     f.write(f"    Max Response Time: {response_data['max']:.4f}\n\n")
         
-        print(f"Detailed report generated: {output_file}")
+        logger.info(f"Detailed report generated: {output_file}")
         return output_file
 

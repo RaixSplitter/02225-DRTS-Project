@@ -1,5 +1,7 @@
 import pandas as pd
+import logging
 
+logger = logging.getLogger(__name__)
 
 class InputParser:
     """
@@ -37,7 +39,7 @@ class InputParser:
                 }
             )
         """
-        print(f"Parsing input files...")
+        logger.info(f"Parsing input files...")
         
         # Read CSV files
         arch_df = pd.read_csv(self.architecture_file)
@@ -71,6 +73,6 @@ class InputParser:
             }
             tasks[row['task_name']] = task
             
-        print(f"Parsed {len(cores)} cores, {len(components)} components, and {len(tasks)} tasks.")
+        logger.info(f"Parsed {len(cores)} cores, {len(components)} components, and {len(tasks)} tasks.")
         return cores, components, tasks
 

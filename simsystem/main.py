@@ -50,7 +50,7 @@ def main(cfg: ExperimentConfig) -> None:
         sim_duration = calculate_hyperperiod(all_tasks)
         # Limit to a reasonable value for very large hyperperiods
         # if sim_duration > 10000:
-        #     print(f"Hyperperiod is very large ({sim_duration}), limiting to 10000 time units.")
+        #     logger.info(f"Hyperperiod is very large ({sim_duration}), limiting to 10000 time units.")
         #     sim_duration = 10000
     else:
         sim_duration = cfg.settings.sim_time
@@ -66,24 +66,24 @@ def main(cfg: ExperimentConfig) -> None:
     output_gen = OutputGenerator(system, analysis_results, simulation_results)
     output_gen.generate_csv_output(output_path)
     output_gen.generate_detailed_report(detailed_report_path)
-    
-    # Print summary
-    print("\nAnalysis Summary:")
+    # logger.info summary
+    logger.info("\nAnalysis Summary:")
     all_schedulable = True
     for comp_id, results in analysis_results.items():
         if comp_id in system.components:
             schedulable = results['schedulable']
             all_schedulable = all_schedulable and schedulable
-            print(f"  Component {comp_id}: {'Schedulable' if schedulable else 'Not schedulable'}")
+            logger.info(f"  Component {comp_id}: {'Schedulable' if schedulable else 'Not schedulable'}")
     
     for core_id, results in analysis_results.items():
         if core_id in system.cores:
             schedulable = results['schedulable']
             all_schedulable = all_schedulable and schedulable
-            print(f"  Core {core_id}: {'Schedulable' if schedulable else 'Not schedulable'}")
+            logger.info(f"  Core {core_id}: {'Schedulable' if schedulable else 'Not schedulable'}")
     
-    print(f"\nOverall System: {'Schedulable' if all_schedulable else 'Not schedulable'}")
-    print(f"Results saved to {cfg.files.output} and {cfg.files.report}")
+    logger.info(f"\nOverall System: {'Schedulable' if all_schedulable else 'Not schedulable'}")
+    logger.info(f"Results saved to {output_path} and {detailed_report_path}")
+    
 
 if __name__ == "__main__":
     main()

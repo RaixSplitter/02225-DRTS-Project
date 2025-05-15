@@ -1,8 +1,12 @@
+import logging
 import numpy as np # just for arange kinda dumb but who cares
 
 from simsystem.objects import Core, Task, HierarchicalSystem, Job
 from simsystem.schedulers import ComponentScheduler, SCHEDULERS
 from simsystem.resources import BDRResourceSupplier, PRMResourceSupplier
+
+
+logger = logging.getLogger(__name__)
 
 
 class SimulationEngine:
@@ -51,17 +55,17 @@ class SimulationEngine:
         Args:
             duration: Total simulation duration.
             time_slice: Time slice duration.
-            verbose: Whether to print simulation details.
+            verbose: Whether to logger.info simulation details.
             
         Returns:
             Dictionary of response time statistics.
         """
-        print(f"Starting simulation for duration {duration}...")
+        logger.info(f"Starting simulation for duration {duration}...")
         self.initialize_response_times()
 
         for time in np.arange(0, duration, time_slice):
             if verbose and int(time) % 100 == 0:
-                print(f"Simulation time: {time:.2f} / {duration:.2f}")
+                logger.info(f"Simulation time: {time:.2f} / {duration:.2f}")
             
             # Release new jobs
             self.release_jobs(time)
@@ -87,9 +91,9 @@ class SimulationEngine:
                 data['max'] = max(data['values'])
                 
                 if verbose:
-                    print(f"Task {task_id} response times: avg={data['avg']:.2f}, max={data['max']:.2f}")
+                    logger.info(f"Task {task_id} response times: avg={data['avg']:.2f}, max={data['max']:.2f}")
         
-        print("Simulation completed.")
+        logger.info("Simulation completed.")
         return self.response_times
 
 

@@ -14,3 +14,6 @@ settings:
   optimize : true # If true, the BDR is optimized for components
   sim_time : 0 #if 0, the simulation uses the hyperperiod
   time_slice : 1 # Simulation time step for advancing the simulation
+
+defaults:
+  - override hydra/job_logging : custom

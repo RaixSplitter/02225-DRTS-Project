@@ -1,6 +1,9 @@
 import math
 from typing import Dict, List, Tuple
 from simsystem.objects import Task, Component, Core, HierarchicalSystem
+import logging
+
+logger = logging.getLogger(__name__)
 
 class AnalysisEngine:
     """
@@ -169,7 +172,7 @@ class AnalysisEngine:
             component: Component to analyze.
             alpha: Resource availability factor.
             delta: Maximum delay in resource allocation.
-            verbose: Whether to print detailed analysis.
+            verbose: Whether to logger.info detailed analysis.
             
         Returns:
             Whether the component is schedulable.
@@ -177,8 +180,8 @@ class AnalysisEngine:
         tasks = self.compute_rm_priority_order(component.tasks)
         
         if verbose:
-            print(f"\nAnalyzing component {component.component_id} under RM:")
-            print(f"  BDR parameters: alpha={alpha:.4f}, delta={delta:.4f}")
+            logger.info(f"\nAnalyzing component {component.component_id} under RM:")
+            logger.info(f"  BDR parameters: alpha={alpha:.4f}, delta={delta:.4f}")
         
         for i, task in enumerate(tasks):
             # Find critical time points for this task
@@ -192,7 +195,7 @@ class AnalysisEngine:
                 supply = self.sbf_bdr(alpha, delta, t)
                 
                 if verbose:
-                    print(f"  Task {task.name} at t={t:.2f}: demand (DBF)={demand:.2f}, supply (SPF)={supply:.2f}")
+                    logger.info(f"  Task {task.name} at t={t:.2f}: demand (DBF)={demand:.2f}, supply (SPF)={supply:.2f}")
                 
                 if demand <= supply:
                     schedulable = True
@@ -200,11 +203,11 @@ class AnalysisEngine:
             
             if not schedulable:
                 if verbose:
-                    print(f"  Task {task.name} is not schedulable!")
+                    logger.info(f"  Task {task.name} is not schedulable!")
                 return False
             
             if verbose:
-                print(f"  Task {task.name} is schedulable.")
+                logger.info(f"  Task {task.name} is schedulable.")
         
         return True
     
@@ -217,7 +220,7 @@ class AnalysisEngine:
             component: Component to analyze.
             alpha: Resource availability factor.
             delta: Maximum delay in resource allocation.
-            verbose: Whether to print detailed analysis.
+            verbose: Whether to logger.info detailed analysis.
             
         Returns:
             Whether the component is schedulable.
@@ -231,9 +234,9 @@ class AnalysisEngine:
             hyperperiod = math.lcm(int(hyperperiod), int(period))
         
         if verbose:
-            print(f"\nAnalyzing component {component.component_id} under EDF:")
-            print(f"  BDR parameters: alpha={alpha:.4f}, delta={delta:.4f}")
-            print(f"  Hyperperiod: {hyperperiod}")
+            logger.info(f"\nAnalyzing component {component.component_id} under EDF:")
+            logger.info(f"  BDR parameters: alpha={alpha:.4f}, delta={delta:.4f}")
+            logger.info(f"  Hyperperiod: {hyperperiod}")
         
         # Find critical time points
         critical_points = self.find_critical_time_points_edf(tasks, hyperperiod)
@@ -244,11 +247,11 @@ class AnalysisEngine:
             supply = self.sbf_bdr(alpha, delta, t)
             
             if verbose:
-                print(f"  At t={t:.2f}: demand={demand:.2f}, supply={supply:.2f}")
+                logger.info(f"  At t={t:.2f}: demand={demand:.2f}, supply={supply:.2f}")
             
             if demand > supply:
                 if verbose:
-                    print("  Not schedulable!")
+                    logger.info("  Not schedulable!")
                 return False
         
         return True
@@ -259,7 +262,7 @@ class AnalysisEngine:
         
         Args:
             component: Component to analyze.
-            verbose: Whether to print detailed analysis.
+            verbose: Whether to logger.info detailed analysis.
             
         Returns:
             Whether the component is schedulable.
@@ -285,7 +288,7 @@ class AnalysisEngine:
         Args:
             component: Component to optimize.
             alpha_increment: Step size for alpha optimization.
-            verbose: Whether to print optimization details.
+            verbose: Whether to logger.info optimization details.
             
         Returns:
             Optimized (alpha, delta) pair.
@@ -300,7 +303,7 @@ class AnalysisEngine:
         best_alpha = initial_alpha
         best_delta = initial_delta
         if best_delta == 0.0:
-            print("Delta was 0, adding eps")
+            logger.info("Delta was 0, adding eps")
             best_delta = 1e-6
         best_cost = c1 * best_alpha + c2 * (1.0 / best_delta)
                
@@ -331,7 +334,7 @@ class AnalysisEngine:
             alpha += alpha_increment
         
         if verbose:
-            print(f"Optimized BDR for {component.component_id}: " 
+            logger.info(f"Optimized BDR for {component.component_id}: " 
                   f"alpha={best_alpha:.4f}, delta={best_delta:.4f}")
         
         return best_alpha, best_delta
@@ -341,13 +344,13 @@ class AnalysisEngine:
         Analyze the entire hierarchical system.
         
         Args:
-            verbose: Whether to print detailed analysis.
+            verbose: Whether to logger.info detailed analysis.
             optimize: Whether to optimize BDR parameters.
             
         Returns:
             Dictionary of analysis results.
         """
-        print("Starting hierarchical schedulability analysis...")
+        logger.info("Starting hierarchical schedulability analysis...")
         results = {}
         
         # Adjust WCET values for core speeds
@@ -356,7 +359,7 @@ class AnalysisEngine:
         # Analyze each component
         for comp_id, component in self.system.components.items():
             if verbose:
-                print(f"\nAnalyzing component {comp_id}...")
+                logger.info(f"\nAnalyzing component {comp_id}...")
             
             schedulable = self.analyze_component(component, verbose)
             
@@ -372,13 +375,13 @@ class AnalysisEngine:
             }
             
             if verbose:
-                print(f"Component {comp_id} is {'schedulable' if schedulable else 'not schedulable'}")
-                print(f"BDR interface: alpha={alpha:.4f}, delta={delta:.4f}")
+                logger.info(f"Component {comp_id} is {'schedulable' if schedulable else 'not schedulable'}")
+                logger.info(f"BDR interface: alpha={alpha:.4f}, delta={delta:.4f}")
         
         # Analyze system-level schedulability (top level)
         for core_id, core in self.system.cores.items():
             if verbose:
-                print(f"\nAnalyzing system-level schedulability for core {core_id}...")
+                logger.info(f"\nAnalyzing system-level schedulability for core {core_id}...")
             
             total_util = 0
             for component in core.components:
@@ -396,8 +399,8 @@ class AnalysisEngine:
             }
             
             if verbose:
-                print(f"Core {core_id} utilization: {total_util:.4f}")
-                print(f"Core {core_id} is {'schedulable' if system_schedulable else 'not schedulable'}")
+                logger.info(f"Core {core_id} utilization: {total_util:.4f}")
+                logger.info(f"Core {core_id} is {'schedulable' if system_schedulable else 'not schedulable'}")
         
-        print("Analysis completed.")
+        logger.info("Analysis completed.")
         return results

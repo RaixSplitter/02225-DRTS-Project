@@ -5,7 +5,9 @@ import math
 import argparse
 from typing import Dict, List, Tuple, Optional
 import json
+import logging
 
+logger = logging.getLogger(__name__)
 class ScheduleVisualizer:
     """
     Visualizes the schedule of tasks in a hierarchical scheduling system.
@@ -36,7 +38,7 @@ class ScheduleVisualizer:
     
     def load_data(self) -> None:
         """Load simulation and system data."""
-        print(f"Loading simulation data from {self.simulation_file}...")
+        logger.info(f"Loading simulation data from {self.simulation_file}...")
         
         # Determine file type and load accordingly
         if self.simulation_file.endswith('.csv'):
@@ -49,7 +51,7 @@ class ScheduleVisualizer:
         
         # Load system structure if provided
         if self.system_file:
-            print(f"Loading system structure from {self.system_file}...")
+            logger.info(f"Loading system structure from {self.system_file}...")
             
             if self.system_file.endswith('.json'):
                 with open(self.system_file, 'r') as f:
@@ -293,7 +295,7 @@ class ScheduleVisualizer:
         # Save the figure if requested
         if output_file:
             plt.savefig(output_file, dpi=150, bbox_inches='tight')
-            print(f"Visualization saved to {output_file}")
+            logger.info(f"Visualization saved to {output_file}")
         
         # Show the plot
         plt.show()
@@ -348,7 +350,7 @@ class ScheduleVisualizer:
         # Save the figure if requested
         if output_file:
             plt.savefig(output_file, dpi=150, bbox_inches='tight')
-            print(f"Response time visualization saved to {output_file}")
+            logger.info(f"Response time visualization saved to {output_file}")
         
         # Show the plot
         plt.show()
@@ -396,7 +398,7 @@ class ScheduleVisualizer:
         with open(output_file, 'w') as f:
             json.dump(structure, f, indent=2)
         
-        print(f"System structure file created: {output_file}")
+        logger.info(f"System structure file created: {output_file}")
 
 def main():
     """Main function to run the visualization tool."""
