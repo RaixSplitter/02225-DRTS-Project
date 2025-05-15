@@ -202,7 +202,7 @@ class AnalysisEngine:
                 supply = self.sbf_bdr(alpha, delta, t)
                 
                 if verbose:
-                    print(f"  Task {task.name} at t={t:.2f}: demand={demand:.2f}, supply={supply:.2f}")
+                    print(f"  Task {task.name} at t={t:.2f}: demand (DBF)={demand:.2f}, supply (SPF)={supply:.2f}")
                 
                 if demand <= supply:
                     schedulable = True
@@ -288,9 +288,7 @@ class AnalysisEngine:
         
         return schedulable
     
-    def optimize_component_bdr(self, component: Component, 
-                              alpha_increment: float = 0.01, 
-                              verbose: bool = False) -> Tuple[float, float]:
+    def optimize_component_bdr(self, component: Component, alpha_increment: float = 0.01, verbose: bool = False) -> Tuple[float, float]:
         """
         Optional: Optimize BDR parameters for a component.
         
@@ -311,6 +309,9 @@ class AnalysisEngine:
         
         best_alpha = initial_alpha
         best_delta = initial_delta
+        if best_delta == 0.0:
+            print("Delta was 0, adding eps")
+            best_delta = 1e-6
         best_cost = c1 * best_alpha + c2 * (1.0 / best_delta)
         
         # Simple optimization: incrementally increase alpha until schedulable
@@ -318,7 +319,9 @@ class AnalysisEngine:
         while alpha <= 1.0:
             # Compute corresponding delta with the Half-Half algorithm
             delta = 2.0 * (component.period * alpha - component.budget)
-            
+            if delta == 0.0:
+                delta = 1e-6
+
             # Check schedulability
             if component.scheduler == "RM":
                 schedulable = self.check_schedulability_rm(component, alpha, delta)
@@ -512,15 +515,15 @@ def main():
     """
     Main function to run the hierarchical schedulability analysis.
     """
-    test_case = "5-huge-test-case"
+    test_case = "3-medium-test-case"
     parser = argparse.ArgumentParser(description='Hierarchical Schedulability Analysis System')
     parser.add_argument('--tasks', default=f'test-cases/{test_case}/tasks.csv', help='Tasks CSV file')
     parser.add_argument('--architecture', default=f'test-cases/{test_case}/architecture.csv', help='Architecture CSV file')
     parser.add_argument('--budgets', default=f'test-cases/{test_case}/budgets.csv', help='Budgets CSV file')
     parser.add_argument('--output', default='solution.csv', help='Output CSV file')
     parser.add_argument('--report', default='detailed_report.txt', help='Detailed report file')
-    parser.add_argument('--verbose', action='store_true', help='Print verbose output')
-    parser.add_argument('--optimize', action='store_true', help='Optimize BDR parameters')
+    parser.add_argument('--verbose', default = True, action='store_true', help='Print verbose output')
+    parser.add_argument('--optimize', default = True, action='store_true', help='Optimize BDR parameters')
     parser.add_argument('--sim-time', type=float, default=0, help='Simulation duration (0 = use hyperperiod)')
     parser.add_argument('--time-slice', type=float, default=1.0, help='Simulation time slice')
     
