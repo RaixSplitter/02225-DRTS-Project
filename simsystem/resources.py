@@ -1,7 +1,5 @@
 from abc import ABC, abstractmethod
-from objects import Job
-
-from objects import Component
+from simsystem.objects import Job, Component
 
 class ResourceSupplier(ABC):
     """

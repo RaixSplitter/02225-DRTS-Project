@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "simsystem"
 version = "0.1.0"
-description = "A project for distributed real-time systems."
+description = "Final project for distributed real-time systems."
 authors = ["Author One <author.one@example.com>", "Author Two <author.two@example.com>"]
 license = "MIT"
 

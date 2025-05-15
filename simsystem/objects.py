@@ -9,7 +9,7 @@ class Task:
     wcet: float
     period: float
     component_id: str
-    scheduler: str = None
+    scheduler: str
     priority: float = None
     deadline: float = None  # NOTE: Implicit deadline model, could change idk
     
@@ -30,7 +30,6 @@ class Component:
     core_id: str
     tasks: list[Task] = field(default_factory=list)
     bdr_interface: None | tuple[float, float] = None
-    priority: float = float('inf')
 
     def add_task(self, task: Task) -> None:
         self.tasks.append(task)
@@ -47,7 +46,6 @@ class Core:
     """
     core_id: str
     speed_factor: float
-    scheduler: str = "none"
     components: list[Component] = field(default_factory=list)
         
     def add_component(self, component: Component) -> None:

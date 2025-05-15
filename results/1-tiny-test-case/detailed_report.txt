@@ -1,0 +1,19 @@
+Hierarchical Schedulability Analysis Report
+=========================================
+
+Core: Core_1
+  Schedulable: True
+  Utilization: 1.0000
+
+Component Analysis:
+  Component: Camera_Sensor
+    Scheduler: RM
+    PRM: (Q=50, P=50)
+    BDR: (α=1.0000, Δ=0.0000)
+    Schedulable: True
+
+Task Response Times:
+  Task: Task_0
+    Avg Response Time: 23.0806
+    Max Response Time: 23.5806
+

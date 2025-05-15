@@ -1,5 +1,5 @@
 import math
-from objects import Task
+from simsystem.objects import Task
 
 def calculate_hyperperiod(tasks: list[Task]) -> int:
     """ Calculate the hyperperiod (LCM of all periods) of a set of tasks. """

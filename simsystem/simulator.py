@@ -1,8 +1,8 @@
 import numpy as np # just for arange kinda dumb but who cares
 
-from objects import Core, Task, HierarchicalSystem, Job
-from schedulers import ComponentScheduler, SCHEDULERS
-from resources import BDRResourceSupplier, PRMResourceSupplier
+from simsystem.objects import Core, Task, HierarchicalSystem, Job
+from simsystem.schedulers import ComponentScheduler, SCHEDULERS
+from simsystem.resources import BDRResourceSupplier, PRMResourceSupplier
 
 
 class SimulationEngine:
