@@ -8,6 +8,8 @@ This repository contains the project for the course 02225 Distributed Real-Time 
 
 The configuration files are located in the `conf` folder. The configuration files are used to configure the main run of an experiment and is handled by Hydra. The configuration files are written in YAML.
 
+For more details on configuration, see the [README in the `conf` folder](conf/README.md).
+
 ## Usage
 
 ### Installation

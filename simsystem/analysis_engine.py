@@ -445,28 +445,24 @@ class AnalysisEngine:
             if verbose:
                 logger.info(f"\nAnalyzing system-level schedulability for core {core_id}...")
             
-            total_util = 0
-            for component in core.components:
-                total_util += component.budget / component.period
-                
-            # Check system-level schedulability (top level)
-            system_schedulable = False
+            alphas, deltas = zip(*[component.bdr_interface for component in core.components])
+            total_alpha = sum(alphas)
             
-            # Check based on top-level scheduler (assume EDF for simplicity)
-            # System is schedulable if total utilization is below 1
-            # and all child components are schedulable
+            utility_check = total_alpha <= 1.0 # Assuming Core utilization is 1.0
+            delay_check = all(delta > -1e-10 for delta in deltas) # Assuming Core is able to guarentee ressources instantaneously
             all_components_schedulable = all(
                 results[component.component_id]['schedulable'] for component in core.components
             )
-            system_schedulable = (total_util < 1.0) and all_components_schedulable
+            
+            system_schedulable = utility_check and delay_check and all_components_schedulable
             
             results[core_id] = {
                 'schedulable': system_schedulable,
-                'utilization': total_util
+                'utilization': total_alpha
             }
             
             if verbose:
-                logger.info(f"Core {core_id} utilization: {total_util:.4f}")
+                logger.info(f"Core {core_id} utilization: {total_alpha:.4f}")
                 logger.info(f"Core {core_id} is {'schedulable' if system_schedulable else 'not schedulable'}")
         
         logger.info("Analysis completed.")
