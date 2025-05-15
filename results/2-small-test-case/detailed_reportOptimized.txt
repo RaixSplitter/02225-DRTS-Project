@@ -1,0 +1,57 @@
+Hierarchical Schedulability Analysis Report by Analysis Engine
+=========================================
+
+Core: Core_1
+  Schedulable: True
+  Utilization: 0.9279
+
+Component Analysis:
+  Component: Camera_Sensor
+    Scheduler: RM
+    PRM: (Q=32, P=52)
+    BDR: (α=0.6154, Δ=40.0000)
+    Schedulable: True
+
+  Component: Image_Processor
+    Scheduler: EDF
+    PRM: (Q=5, P=16)
+    BDR: (α=0.3125, Δ=22.0000)
+    Schedulable: True
+
+Task Response Times during simulation:
+  Task: Task_0
+    Avg Response Time: 50.1560
+    Max Response Time: 207.5310
+
+  Task: Task_1
+    Avg Response Time: 163.2382
+    Max Response Time: 295.2382
+
+  Task: Task_2
+    Avg Response Time: 34.7322
+    Max Response Time: 219.1489
+
+  Task: Task_3
+    Avg Response Time: 683.0558
+    Max Response Time: 858.5558
+
+  Task: Task_4
+    Avg Response Time: 335.6008
+    Max Response Time: 490.1008
+
+  Task: Task_5
+    Avg Response Time: 392.7419
+    Max Response Time: 547.2419
+
+  Task: Task_6
+    Avg Response Time: 679.2319
+    Max Response Time: 679.2319
+
+  Task: Task_7
+    Avg Response Time: 575.0302
+    Max Response Time: 575.0302
+
+  Task: Task_8
+    Avg Response Time: 326.8179
+    Max Response Time: 463.1512
+

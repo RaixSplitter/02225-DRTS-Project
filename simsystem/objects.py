@@ -83,11 +83,12 @@ class HierarchicalSystem:
         
         for task_id, task_data in tasks.items():
             task = Task(
-                task_data['name'],
-                task_data['wcet'],
-                task_data['period'],
-                task_data['component_id'],
-                task_data['priority'] if 'priority' in task_data and task_data['priority'] else None
+                name = task_data['name'],
+                wcet = task_data['wcet'],
+                period = task_data['period'],
+                scheduler=None,
+                component_id = task_data['component_id'],
+                priority = task_data['priority'] if 'priority' in task_data and task_data['priority'] is not None else 1e10
             )
             self.tasks[task_id] = task
             

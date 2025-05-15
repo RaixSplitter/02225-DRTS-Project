@@ -74,11 +74,11 @@ class RMScheduler(Scheduler):
             return None
             
         # If priorities are explicitly specified, use them
-        if all(job.task.priority is not None for job in available_jobs):
-            return max(available_jobs, key=lambda job: job.task.priority)
+        # if all(job.task.priority is not None for job in available_jobs):
+        #     return max(available_jobs, key=lambda job: job.task.priority)
             
         # Otherwise, use RM priority (shorter period = higher priority)
-        return min(available_jobs, key=lambda job: job.task.period)
+        return min(available_jobs, key=lambda job: job.task.priority)
 
 
     def name(self) -> str:
@@ -138,6 +138,8 @@ class ComponentScheduler:
             if selected_job.is_complete():
                 selected_job.completion_time = time + execution_time
                 completed_jobs.append(selected_job)
+                
+                
                 jobs.remove(selected_job)
         
         return completed_jobs

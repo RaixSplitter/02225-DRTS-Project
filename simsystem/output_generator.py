@@ -68,7 +68,7 @@ class OutputGenerator:
         """
         logger.info(f"Generating detailed report to {output_file}...")
         with open(output_file, "w", encoding='utf-8') as f:
-            f.write("Hierarchical Schedulability Analysis Report\n")
+            f.write("Hierarchical Schedulability Analysis Report by Analysis Engine\n")
             f.write("=========================================\n\n")
             
             # System-level results
@@ -93,7 +93,7 @@ class OutputGenerator:
                         f.write(f"    Schedulable: {comp_results['schedulable']}\n\n")
             
             # Task-level results
-            f.write("Task Response Times:\n")
+            f.write("Task Response Times during simulation:\n")
             for task_id, response_data in self.simulation_results.items():
                 if response_data['values']:
                     f.write(f"  Task: {task_id}\n")

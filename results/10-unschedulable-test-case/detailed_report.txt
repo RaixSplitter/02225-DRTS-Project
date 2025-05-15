@@ -1,0 +1,725 @@
+Hierarchical Schedulability Analysis Report by Analysis Engine
+=========================================
+
+Core: Core_1
+  Schedulable: True
+  Utilization: 0.8818
+
+Core: Core_2
+  Schedulable: False
+  Utilization: 0.6970
+
+Core: Core_3
+  Schedulable: False
+  Utilization: 0.5846
+
+Core: Core_4
+  Schedulable: False
+  Utilization: 0.8632
+
+Core: Core_5
+  Schedulable: True
+  Utilization: 0.7778
+
+Core: Core_6
+  Schedulable: False
+  Utilization: 0.7500
+
+Core: Core_7
+  Schedulable: True
+  Utilization: 0.7917
+
+Core: Core_8
+  Schedulable: False
+  Utilization: 0.8424
+
+Core: Core_9
+  Schedulable: False
+  Utilization: 0.5034
+
+Core: Core_10
+  Schedulable: False
+  Utilization: 0.5912
+
+Core: Core_11
+  Schedulable: True
+  Utilization: 0.4762
+
+Core: Core_12
+  Schedulable: False
+  Utilization: 0.2778
+
+Core: Core_13
+  Schedulable: True
+  Utilization: 0.8164
+
+Core: Core_14
+  Schedulable: False
+  Utilization: 1.0000
+
+Core: Core_15
+  Schedulable: False
+  Utilization: 0.7308
+
+Core: Core_16
+  Schedulable: False
+  Utilization: 0.7111
+
+Component Analysis:
+  Component: Camera_Sensor
+    Scheduler: RM
+    PRM: (Q=4, P=10)
+    BDR: (α=0.4000, Δ=12.0000)
+    Schedulable: True
+
+  Component: Image_Processor
+    Scheduler: EDF
+    PRM: (Q=2, P=11)
+    BDR: (α=0.1818, Δ=18.0000)
+    Schedulable: True
+
+  Component: Bitmap_Processor
+    Scheduler: RM
+    PRM: (Q=3, P=10)
+    BDR: (α=0.3000, Δ=14.0000)
+    Schedulable: True
+
+  Component: Lidar_Sensor
+    Scheduler: RM
+    PRM: (Q=5, P=15)
+    BDR: (α=0.3333, Δ=20.0000)
+    Schedulable: False
+
+  Component: Control_Unit
+    Scheduler: EDF
+    PRM: (Q=4, P=11)
+    BDR: (α=0.3636, Δ=14.0000)
+    Schedulable: True
+
+  Component: GPS_Sensor
+    Scheduler: RM
+    PRM: (Q=2, P=13)
+    BDR: (α=0.1538, Δ=22.0000)
+    Schedulable: False
+
+  Component: Communication_Unit
+    Scheduler: RM
+    PRM: (Q=3, P=13)
+    BDR: (α=0.2308, Δ=20.0000)
+    Schedulable: True
+
+  Component: Proximity_Sensor
+    Scheduler: EDF
+    PRM: (Q=1, P=5)
+    BDR: (α=0.2000, Δ=8.0000)
+    Schedulable: True
+
+  Component: Radar_Sensor
+    Scheduler: EDF
+    PRM: (Q=3, P=5)
+    BDR: (α=0.6000, Δ=4.0000)
+    Schedulable: False
+
+  Component: Sonar_Sensor
+    Scheduler: RM
+    PRM: (Q=5, P=19)
+    BDR: (α=0.2632, Δ=28.0000)
+    Schedulable: False
+
+  Component: Laser_Sensor
+    Scheduler: RM
+    PRM: (Q=4, P=9)
+    BDR: (α=0.4444, Δ=10.0000)
+    Schedulable: True
+
+  Component: Infrared_Sensor
+    Scheduler: RM
+    PRM: (Q=2, P=6)
+    BDR: (α=0.3333, Δ=8.0000)
+    Schedulable: True
+
+  Component: Ultraviolet_Sensor
+    Scheduler: EDF
+    PRM: (Q=3, P=12)
+    BDR: (α=0.2500, Δ=18.0000)
+    Schedulable: True
+
+  Component: Thermal_Sensor
+    Scheduler: EDF
+    PRM: (Q=1, P=2)
+    BDR: (α=0.5000, Δ=2.0000)
+    Schedulable: False
+
+  Component: Pressure_Sensor
+    Scheduler: RM
+    PRM: (Q=1, P=8)
+    BDR: (α=0.1250, Δ=14.0000)
+    Schedulable: True
+
+  Component: Humidity_Sensor
+    Scheduler: RM
+    PRM: (Q=2, P=3)
+    BDR: (α=0.6667, Δ=2.0000)
+    Schedulable: True
+
+  Component: Temperature_Sensor
+    Scheduler: EDF
+    PRM: (Q=20, P=32)
+    BDR: (α=0.6250, Δ=24.0000)
+    Schedulable: False
+
+  Component: Light_Sensor
+    Scheduler: RM
+    PRM: (Q=5, P=23)
+    BDR: (α=0.2174, Δ=36.0000)
+    Schedulable: False
+
+  Component: Sound_Sensor
+    Scheduler: RM
+    PRM: (Q=14, P=37)
+    BDR: (α=0.3784, Δ=46.0000)
+    Schedulable: False
+
+  Component: Vibration_Sensor
+    Scheduler: EDF
+    PRM: (Q=1, P=8)
+    BDR: (α=0.1250, Δ=14.0000)
+    Schedulable: False
+
+  Component: Motion_Sensor
+    Scheduler: RM
+    PRM: (Q=17, P=61)
+    BDR: (α=0.2787, Δ=88.0000)
+    Schedulable: False
+
+  Component: Acceleration_Sensor
+    Scheduler: RM
+    PRM: (Q=5, P=16)
+    BDR: (α=0.3125, Δ=22.0000)
+    Schedulable: True
+
+  Component: Gyroscope_Sensor
+    Scheduler: EDF
+    PRM: (Q=3, P=9)
+    BDR: (α=0.3333, Δ=12.0000)
+    Schedulable: True
+
+  Component: Magnetometer_Sensor
+    Scheduler: RM
+    PRM: (Q=1, P=7)
+    BDR: (α=0.1429, Δ=12.0000)
+    Schedulable: True
+
+  Component: Compass_Sensor
+    Scheduler: RM
+    PRM: (Q=2, P=12)
+    BDR: (α=0.1667, Δ=20.0000)
+    Schedulable: False
+
+  Component: Altimeter_Sensor
+    Scheduler: EDF
+    PRM: (Q=1, P=9)
+    BDR: (α=0.1111, Δ=16.0000)
+    Schedulable: False
+
+  Component: Barometer_Sensor
+    Scheduler: EDF
+    PRM: (Q=5, P=9)
+    BDR: (α=0.5556, Δ=8.0000)
+    Schedulable: True
+
+  Component: Hygrometer_Sensor
+    Scheduler: RM
+    PRM: (Q=6, P=23)
+    BDR: (α=0.2609, Δ=34.0000)
+    Schedulable: True
+
+  Component: Anemometer_Sensor
+    Scheduler: RM
+    PRM: (Q=1, P=2)
+    BDR: (α=0.5000, Δ=2.0000)
+    Schedulable: True
+
+  Component: Rain_Gauge_Sensor
+    Scheduler: RM
+    PRM: (Q=8, P=16)
+    BDR: (α=0.5000, Δ=16.0000)
+    Schedulable: True
+
+  Component: Snow_Gauge_Sensor
+    Scheduler: EDF
+    PRM: (Q=3, P=13)
+    BDR: (α=0.2308, Δ=20.0000)
+    Schedulable: False
+
+  Component: Thermometer_Sensor
+    Scheduler: EDF
+    PRM: (Q=6, P=12)
+    BDR: (α=0.5000, Δ=12.0000)
+    Schedulable: True
+
+  Component: Pyrometer_Sensor
+    Scheduler: RM
+    PRM: (Q=1, P=9)
+    BDR: (α=0.1111, Δ=16.0000)
+    Schedulable: False
+
+  Component: Photometer_Sensor
+    Scheduler: RM
+    PRM: (Q=9, P=15)
+    BDR: (α=0.6000, Δ=12.0000)
+    Schedulable: True
+
+Task Response Times during simulation:
+  Task: Task_0
+    Avg Response Time: 866.7885
+    Max Response Time: 1698.2500
+
+  Task: Task_1
+    Avg Response Time: 51.8497
+    Max Response Time: 108.3714
+
+  Task: Task_2
+    Avg Response Time: 881.6716
+    Max Response Time: 1713.1331
+
+  Task: Task_3
+    Avg Response Time: 858.5730
+    Max Response Time: 1748.1656
+
+  Task: Task_4
+    Avg Response Time: 55.7890
+    Max Response Time: 116.2786
+
+  Task: Task_5
+    Avg Response Time: 964.5791
+    Max Response Time: 1793.2714
+
+  Task: Task_6
+    Avg Response Time: 27.4583
+    Max Response Time: 124.0000
+
+  Task: Task_7
+    Avg Response Time: 129.1818
+    Max Response Time: 269.0000
+
+  Task: Task_8
+    Avg Response Time: 1030.3333
+    Max Response Time: 1565.3333
+
+  Task: Task_9
+    Avg Response Time: 47.7917
+    Max Response Time: 192.0000
+
+  Task: Task_10
+    Avg Response Time: 698.7040
+    Max Response Time: 1414.2424
+
+  Task: Task_11
+    Avg Response Time: 774.5828
+    Max Response Time: 1447.1212
+
+  Task: Task_12
+    Avg Response Time: 745.6475
+    Max Response Time: 1435.1212
+
+  Task: Task_13
+    Avg Response Time: 836.3434
+    Max Response Time: 1477.1212
+
+  Task: Task_14
+    Avg Response Time: 1034.2424
+    Max Response Time: 1569.2424
+
+  Task: Task_15
+    Avg Response Time: 849.4545
+    Max Response Time: 1475.1212
+
+  Task: Task_16
+    Avg Response Time: 595.7261
+    Max Response Time: 1135.0595
+
+  Task: Task_17
+    Avg Response Time: 40.7524
+    Max Response Time: 136.0711
+
+  Task: Task_18
+    Avg Response Time: 70.4814
+    Max Response Time: 211.1480
+
+  Task: Task_19
+    Avg Response Time: 95.5647
+    Max Response Time: 230.1480
+
+  Task: Task_20
+    Avg Response Time: 149.4820
+    Max Response Time: 262.0653
+
+  Task: Task_21
+    Avg Response Time: 804.2133
+    Max Response Time: 1330.2133
+
+  Task: Task_22
+    Avg Response Time: 714.4543
+    Max Response Time: 1293.1210
+
+  Task: Task_23
+    Avg Response Time: 556.4132
+    Max Response Time: 1110.0403
+
+  Task: Task_24
+    Avg Response Time: 642.7070
+    Max Response Time: 1248.0403
+
+  Task: Task_25
+    Avg Response Time: 610.8201
+    Max Response Time: 1288.1246
+
+  Task: Task_26
+    Avg Response Time: 720.7734
+    Max Response Time: 1345.3188
+
+  Task: Task_27
+    Avg Response Time: 797.3333
+    Max Response Time: 1290.3333
+
+  Task: Task_28
+    Avg Response Time: 66.5184
+    Max Response Time: 141.2059
+
+  Task: Task_29
+    Avg Response Time: 795.5076
+    Max Response Time: 1386.0076
+
+  Task: Task_30
+    Avg Response Time: 1430.1572
+    Max Response Time: 1896.0143
+
+  Task: Task_31
+    Avg Response Time: 104.1968
+    Max Response Time: 593.1864
+
+  Task: Task_32
+    Avg Response Time: 236.5952
+    Max Response Time: 694.1577
+
+  Task: Task_34
+    Avg Response Time: 868.5860
+    Max Response Time: 1290.0860
+
+  Task: Task_35
+    Avg Response Time: 182.2611
+    Max Response Time: 447.1183
+
+  Task: Task_36
+    Avg Response Time: 59.3467
+    Max Response Time: 333.0753
+
+  Task: Task_37
+    Avg Response Time: 625.3039
+    Max Response Time: 1169.2206
+
+  Task: Task_38
+    Avg Response Time: 770.6324
+    Max Response Time: 1239.1324
+
+  Task: Task_39
+    Avg Response Time: 886.6912
+    Max Response Time: 1315.1912
+
+  Task: Task_40
+    Avg Response Time: 576.0206
+    Max Response Time: 1150.2206
+
+  Task: Task_41
+    Avg Response Time: 1049.4363
+    Max Response Time: 1403.1029
+
+  Task: Task_42
+    Avg Response Time: 1459.0294
+    Max Response Time: 1459.0294
+
+  Task: Task_43
+    Avg Response Time: 551.8873
+    Max Response Time: 1136.2206
+
+  Task: Task_44
+    Avg Response Time: 694.7574
+    Max Response Time: 1213.1324
+
+  Task: Task_45
+    Avg Response Time: 643.5245
+    Max Response Time: 1187.4412
+
+  Task: Task_46
+    Avg Response Time: 523.3104
+    Max Response Time: 1123.4706
+
+  Task: Task_47
+    Avg Response Time: 588.1506
+    Max Response Time: 1159.4706
+
+  Task: Task_48
+    Avg Response Time: 547.8631
+    Max Response Time: 1135.4412
+
+  Task: Task_49
+    Avg Response Time: 94.1442
+    Max Response Time: 357.0417
+
+  Task: Task_50
+    Avg Response Time: 200.4519
+    Max Response Time: 564.0417
+
+  Task: Task_51
+    Avg Response Time: 856.3333
+    Max Response Time: 1722.0833
+
+  Task: Task_52
+    Avg Response Time: 152.0917
+    Max Response Time: 449.3750
+
+  Task: Task_53
+    Avg Response Time: 571.6382
+    Max Response Time: 2103.3750
+
+  Task: Task_54
+    Avg Response Time: 694.3624
+    Max Response Time: 1407.3624
+
+  Task: Task_55
+    Avg Response Time: 644.2366
+    Max Response Time: 1363.2153
+
+  Task: Task_56
+    Avg Response Time: 765.3046
+    Max Response Time: 1191.3046
+
+  Task: Task_57
+    Avg Response Time: 677.0574
+    Max Response Time: 1375.2574
+
+  Task: Task_58
+    Avg Response Time: 57.0577
+    Max Response Time: 287.1882
+
+  Task: Task_59
+    Avg Response Time: 128.5053
+    Max Response Time: 340.2009
+
+  Task: Task_60
+    Avg Response Time: 1229.8311
+    Max Response Time: 1661.1644
+
+  Task: Task_61
+    Avg Response Time: 170.8684
+    Max Response Time: 299.0767
+
+  Task: Task_62
+    Avg Response Time: 1084.6186
+    Max Response Time: 1373.1186
+
+  Task: Task_63
+    Avg Response Time: 574.4843
+    Max Response Time: 1124.1129
+
+  Task: Task_64
+    Avg Response Time: 608.5835
+    Max Response Time: 1136.1129
+
+  Task: Task_65
+    Avg Response Time: 242.3275
+    Max Response Time: 674.1608
+
+  Task: Task_66
+    Avg Response Time: 757.6758
+    Max Response Time: 1055.1758
+
+  Task: Task_67
+    Avg Response Time: 51.4014
+    Max Response Time: 358.0599
+
+  Task: Task_68
+    Avg Response Time: 67.8826
+    Max Response Time: 365.2397
+
+  Task: Task_69
+    Avg Response Time: 192.3446
+    Max Response Time: 498.1541
+
+  Task: Task_70
+    Avg Response Time: 1370.7312
+    Max Response Time: 1749.2312
+
+  Task: Task_71
+    Avg Response Time: 436.6905
+    Max Response Time: 786.1905
+
+  Task: Task_72
+    Avg Response Time: 391.4069
+    Max Response Time: 763.2857
+
+  Task: Task_73
+    Avg Response Time: 369.1066
+    Max Response Time: 757.2857
+
+  Task: Task_74
+    Avg Response Time: 631.2381
+    Max Response Time: 912.2381
+
+  Task: Task_75
+    Avg Response Time: 553.6726
+    Max Response Time: 877.0476
+
+  Task: Task_76
+    Avg Response Time: 357.5238
+    Max Response Time: 740.2857
+
+  Task: Task_77
+    Avg Response Time: 20.3619
+    Max Response Time: 81.0952
+
+  Task: Task_78
+    Avg Response Time: 427.8889
+    Max Response Time: 794.0000
+
+  Task: Task_79
+    Avg Response Time: 137.0025
+    Max Response Time: 499.1275
+
+  Task: Task_80
+    Avg Response Time: 481.0748
+    Max Response Time: 943.1275
+
+  Task: Task_81
+    Avg Response Time: 41.2941
+    Max Response Time: 259.1275
+
+  Task: Task_82
+    Avg Response Time: 1196.0882
+    Max Response Time: 1196.0882
+
+  Task: Task_83
+    Avg Response Time: 666.4052
+    Max Response Time: 1118.0719
+
+  Task: Task_84
+    Avg Response Time: 881.7386
+    Max Response Time: 1175.0719
+
+  Task: Task_85
+    Avg Response Time: 1357.0654
+    Max Response Time: 1357.0654
+
+  Task: Task_86
+    Avg Response Time: 477.1943
+    Max Response Time: 962.2889
+
+  Task: Task_87
+    Avg Response Time: 486.3824
+    Max Response Time: 980.2444
+
+  Task: Task_88
+    Avg Response Time: 539.0222
+    Max Response Time: 1028.0222
+
+  Task: Task_89
+    Avg Response Time: 39.1261
+    Max Response Time: 148.0174
+
+  Task: Task_90
+    Avg Response Time: 671.6077
+    Max Response Time: 1080.0522
+
+  Task: Task_91
+    Avg Response Time: 398.2588
+    Max Response Time: 994.3699
+
+  Task: Task_92
+    Avg Response Time: 84.0112
+    Max Response Time: 293.2397
+
+  Task: Task_93
+    Avg Response Time: 13.4186
+    Max Response Time: 115.3699
+
+  Task: Task_94
+    Avg Response Time: 1743.0479
+    Max Response Time: 1743.0479
+
+  Task: Task_95
+    Avg Response Time: 394.2189
+    Max Response Time: 1149.2397
+
+  Task: Task_96
+    Avg Response Time: 1313.8192
+    Max Response Time: 1932.2192
+
+  Task: Task_98
+    Avg Response Time: 379.9783
+    Max Response Time: 824.2283
+
+  Task: Task_99
+    Avg Response Time: 441.2908
+    Max Response Time: 867.2283
+
+  Task: Task_100
+    Avg Response Time: 650.8184
+    Max Response Time: 964.2184
+
+  Task: Task_101
+    Avg Response Time: 920.7134
+    Max Response Time: 1087.2134
+
+  Task: Task_102
+    Avg Response Time: 572.5983
+    Max Response Time: 960.2233
+
+  Task: Task_103
+    Avg Response Time: 354.3220
+    Max Response Time: 806.2283
+
+  Task: Task_104
+    Avg Response Time: 1638.2134
+    Max Response Time: 1638.2134
+
+  Task: Task_105
+    Avg Response Time: 807.2208
+    Max Response Time: 1139.2208
+
+  Task: Task_106
+    Avg Response Time: 475.4254
+    Max Response Time: 885.1129
+
+  Task: Task_107
+    Avg Response Time: 362.5097
+    Max Response Time: 783.1129
+
+  Task: Task_108
+    Avg Response Time: 732.3065
+    Max Response Time: 1037.3065
+
+  Task: Task_109
+    Avg Response Time: 410.3266
+    Max Response Time: 848.4516
+
+  Task: Task_110
+    Avg Response Time: 154.9137
+    Max Response Time: 554.0101
+
+  Task: Task_111
+    Avg Response Time: 229.5101
+    Max Response Time: 588.0101
+
+  Task: Task_112
+    Avg Response Time: 826.0101
+    Max Response Time: 1488.0101
+
+  Task: Task_113
+    Avg Response Time: 965.1380
+    Max Response Time: 1968.2808
+
+  Task: Task_114
+    Avg Response Time: 189.4263
+    Max Response Time: 550.4707
+

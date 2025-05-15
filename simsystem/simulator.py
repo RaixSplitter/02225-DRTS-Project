@@ -2,7 +2,7 @@ import logging
 import numpy as np # just for arange kinda dumb but who cares
 
 from simsystem.objects import Core, Task, HierarchicalSystem, Job
-from simsystem.schedulers import ComponentScheduler, SCHEDULERS
+from simsystem.schedulers import ComponentScheduler, SCHEDULERS, Scheduler
 from simsystem.resources import BDRResourceSupplier, PRMResourceSupplier
 
 
@@ -80,6 +80,8 @@ class SimulationEngine:
                     response_time = job.get_response_time()
                     if task_id in self.response_times:
                         self.response_times[task_id]['values'].append(response_time)
+                    else:
+                        logger.warning(f"Task {task_id} not found in response times data structure.")
                 
                 # Add completed jobs to the list
                 self.completed_jobs.extend(completed_jobs)
@@ -94,6 +96,7 @@ class SimulationEngine:
                     logger.info(f"Task {task_id} response times: avg={data['avg']:.2f}, max={data['max']:.2f}")
         
         logger.info("Simulation completed.")
+        
         return self.response_times
 
 
@@ -106,7 +109,7 @@ class SystemLevelScheduler:
         self.core = core
         
         # Create component schedulers
-        self.component_schedulers = {}
+        self.component_schedulers : dict[str, ComponentScheduler] = {}
         for component in core.components:
             # Use BDR resource supplier if BDR interface is set, otherwise use PRM
             if component.bdr_interface:
@@ -141,25 +144,25 @@ class SystemLevelScheduler:
             
             # Create a virtual deadline based on component's period
             # This is a simplification - in a real system, this would be more complex
-            virtual_deadline = time + component.period
             
-            # Count jobs for this component to determine priority
-            component_job_count = len([j for j in jobs if j.task.component_id == component_id])
-            
-            if component_job_count > 0:
-                # Create a virtual job representing this component
+            for job in jobs:
+                if job.task.component_id != component_id:
+                    continue
                 virtual_job = Job(
                     task = Task(
-                        name = f"Component_{component_id}", 
+                        name = job.task.name,
                         wcet = component.budget,
-                        period = component.period, 
-                        component_id = "SYSTEM",
-                        scheduler = "N/A"
+                        period = component.period,
+                        component_id=component_id,
+                        scheduler=component.scheduler,
+                        priority=job.task.priority,
+                        deadline=job.release_time + job.task.period
                     ),
                     release_time = time,
-                    deadline = virtual_deadline
+                    deadline = job.release_time + job.task.period
                 )
                 component_jobs.append((virtual_job, component_id))
+                
         
         # No components with jobs to execute
         if not component_jobs:

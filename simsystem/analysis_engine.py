@@ -110,7 +110,7 @@ class AnalysisEngine:
         """
         # If priorities are specified, use them
         if all(task.priority is not None for task in tasks):
-            return sorted(tasks, key=lambda t: t.priority, reverse=True)
+            return sorted(tasks, key=lambda t: t.priority)
         # Otherwise, sort by period (RM policy)
         return sorted(tasks, key=lambda t: t.period)
     
@@ -297,8 +297,8 @@ class AnalysisEngine:
         initial_alpha, initial_delta = self.convert_prm_to_bdr(component.budget, component.period)
         
         # Cost function weights
-        c1 = 0.8  # Weight for alpha (processor utilization)
-        c2 = 0.2  # Weight for switch_cost (inversely related to delta)
+        c1 = 0.95  # Weight for alpha (processor utilization)
+        c2 = 0.05  # Weight for switch_cost (inversely related to delta)
         
         best_alpha = initial_alpha
         best_delta = initial_delta
@@ -339,6 +339,56 @@ class AnalysisEngine:
         
         return best_alpha, best_delta
     
+    def optimize_prm_for_component(self, component: Component, period_range, budget_step=1.0, verbose=False):
+        """
+        Search for the best (budget, period) pair for the component, considering core utilization.
+        period_range: (min_period, max_period, step)
+        """
+        best_budget = None
+        best_period = None
+        best_cost = float('inf')
+
+        # Find the core this component belongs to
+        core_of_component = None
+        for core in self.system.cores.values():
+            if component in core.components:
+                core_of_component = core
+                break
+
+        if core_of_component is None:
+            logger.warning(f"Component {component.component_id} is not assigned to any core.")
+            return None, None
+
+        for period in range(*period_range):
+            for budget in range(1, int(period)+1, int(budget_step)):
+                alpha, delta = self.convert_prm_to_bdr(budget, period)
+
+                # Calculate total utilization if this component used (budget, period)
+                total_util = 0.0
+                for comp in core_of_component.components:
+                    if comp is component:
+                        total_util += budget / period
+                    else:
+                        total_util += comp.budget / comp.period
+                if total_util > 1.0:
+                    continue  # Skip this candidate, would make core unschedulable
+
+                if component.scheduler == "RM":
+                    schedulable = self.check_schedulability_rm(component, alpha, delta)
+                else:
+                    schedulable = self.check_schedulability_edf(component, alpha, delta)
+                if schedulable:
+                    if delta == 0.0:
+                        delta = 1e-6
+                    cost = 0.95 * alpha + 0.05 * (1.0 / delta)
+                    if cost < best_cost:
+                        best_budget = budget
+                        best_period = period
+                        best_cost = cost
+        if verbose:
+            logger.info(f"Best PRM: budget={best_budget}, period={best_period}, cost={best_cost}")
+        return best_budget, best_period
+    
     def analyze_system(self, verbose: bool = False, optimize: bool = False) -> Dict:
         """
         Analyze the entire hierarchical system.
@@ -362,6 +412,18 @@ class AnalysisEngine:
                 logger.info(f"\nAnalyzing component {comp_id}...")
             
             schedulable = self.analyze_component(component, verbose)
+            
+            # Try to optimize PRM if not schedulable and optimize flag is set
+            if optimize:
+                # Example period range: (min_period, max_period+1, step)
+                min_period = int(min(task.period for task in component.tasks))
+                max_period = int(2 * min_period)
+                period_range = (min_period, max_period + 1, 1)
+                best_budget, best_period = self.optimize_prm_for_component(component, period_range, budget_step=1.0, verbose=verbose)
+                if best_budget is not None and best_period is not None:
+                    component.budget = best_budget
+                    component.period = best_period
+                    schedulable = self.analyze_component(component, verbose)
             
             if optimize and schedulable:
                 alpha, delta = self.optimize_component_bdr(component, verbose=verbose)
@@ -391,7 +453,12 @@ class AnalysisEngine:
             system_schedulable = False
             
             # Check based on top-level scheduler (assume EDF for simplicity)
-            system_schedulable = total_util <= 1.0
+            # System is schedulable if total utilization is below 1
+            # and all child components are schedulable
+            all_components_schedulable = all(
+                results[component.component_id]['schedulable'] for component in core.components
+            )
+            system_schedulable = (total_util < 1.0) and all_components_schedulable
             
             results[core_id] = {
                 'schedulable': system_schedulable,

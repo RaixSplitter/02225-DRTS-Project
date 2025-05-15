@@ -1,0 +1,19 @@
+files: 
+  test_cases_dir: test-cases # Directory containing test cases
+  test_case: 6-gigantic-test-case # Test case to be used for the simulation
+  tasks: tasks.csv # Task file for the simulation
+  architecture: architecture.csv # Architecture file for the simulation
+  budgets: budgets.csv # Budget file for the simulation
+
+  results_dir: results # Directory to store the results
+  output : solution # Output file for the simulation
+  report : detailed_report # Report file for the simulation
+
+settings:
+  verbose : false # If true, the simulation will print detailed information
+  optimize : false # If true, the BDR is optimized for components
+  sim_time : 0 #if 0, the simulation uses the hyperperiod
+  time_slice : 1 # Simulation time step for advancing the simulation
+
+defaults:
+  - override hydra/job_logging : custom

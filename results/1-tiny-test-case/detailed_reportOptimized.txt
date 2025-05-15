@@ -8,7 +8,7 @@ Core: Core_1
 Component Analysis:
   Component: Camera_Sensor
     Scheduler: RM
-    PRM: (Q=84, P=84)
+    PRM: (Q=50, P=50)
     BDR: (α=1.0000, Δ=0.0000)
     Schedulable: True
 

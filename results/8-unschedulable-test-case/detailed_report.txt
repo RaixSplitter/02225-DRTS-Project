@@ -1,0 +1,143 @@
+Hierarchical Schedulability Analysis Report by Analysis Engine
+=========================================
+
+Core: Core_1
+  Schedulable: False
+  Utilization: 0.7922
+
+Core: Core_2
+  Schedulable: False
+  Utilization: 1.0000
+
+Core: Core_3
+  Schedulable: False
+  Utilization: 0.7308
+
+Component Analysis:
+  Component: Camera_Sensor
+    Scheduler: RM
+    PRM: (Q=4, P=11)
+    BDR: (α=0.3636, Δ=14.0000)
+    Schedulable: True
+
+  Component: Image_Processor
+    Scheduler: EDF
+    PRM: (Q=2, P=7)
+    BDR: (α=0.2857, Δ=10.0000)
+    Schedulable: True
+
+  Component: Bitmap_Processor
+    Scheduler: RM
+    PRM: (Q=1, P=7)
+    BDR: (α=0.1429, Δ=12.0000)
+    Schedulable: False
+
+  Component: Lidar_Sensor
+    Scheduler: RM
+    PRM: (Q=1, P=3)
+    BDR: (α=0.3333, Δ=4.0000)
+    Schedulable: False
+
+  Component: Control_Unit
+    Scheduler: EDF
+    PRM: (Q=4, P=6)
+    BDR: (α=0.6667, Δ=4.0000)
+    Schedulable: True
+
+  Component: GPS_Sensor
+    Scheduler: RM
+    PRM: (Q=3, P=13)
+    BDR: (α=0.2308, Δ=20.0000)
+    Schedulable: False
+
+  Component: Communication_Unit
+    Scheduler: RM
+    PRM: (Q=2, P=4)
+    BDR: (α=0.5000, Δ=4.0000)
+    Schedulable: True
+
+Task Response Times during simulation:
+  Task: Task_0
+    Avg Response Time: 319.0337
+    Max Response Time: 319.0337
+
+  Task: Task_2
+    Avg Response Time: 33.4952
+    Max Response Time: 104.0337
+
+  Task: Task_3
+    Avg Response Time: 72.6051
+    Max Response Time: 165.0337
+
+  Task: Task_4
+    Avg Response Time: 135.8337
+    Max Response Time: 245.0337
+
+  Task: Task_5
+    Avg Response Time: 135.1376
+    Max Response Time: 258.1376
+
+  Task: Task_6
+    Avg Response Time: 127.9376
+    Max Response Time: 260.1376
+
+  Task: Task_7
+    Avg Response Time: 326.1376
+    Max Response Time: 326.1376
+
+  Task: Task_8
+    Avg Response Time: 379.4709
+    Max Response Time: 498.1376
+
+  Task: Task_10
+    Avg Response Time: 70.3876
+    Max Response Time: 178.1376
+
+  Task: Task_12
+    Avg Response Time: 49.4286
+    Max Response Time: 99.1905
+
+  Task: Task_13
+    Avg Response Time: 10.2952
+    Max Response Time: 45.0952
+
+  Task: Task_14
+    Avg Response Time: 323.5952
+    Max Response Time: 449.0952
+
+  Task: Task_16
+    Avg Response Time: 502.0952
+    Max Response Time: 502.0952
+
+  Task: Task_17
+    Avg Response Time: 215.0238
+    Max Response Time: 433.0952
+
+  Task: Task_19
+    Avg Response Time: 338.5714
+    Max Response Time: 465.5714
+
+  Task: Task_21
+    Avg Response Time: 258.9905
+    Max Response Time: 445.1905
+
+  Task: Task_22
+    Avg Response Time: 90.9403
+    Max Response Time: 153.0312
+
+  Task: Task_23
+    Avg Response Time: 196.1975
+    Max Response Time: 196.1975
+
+  Task: Task_24
+    Avg Response Time: 69.9667
+    Max Response Time: 172.3514
+
+  Task: Task_25
+    Avg Response Time: 317.3108
+    Max Response Time: 317.3108
+
+  Task: Task_27
+    Avg Response Time: 31.1951
+    Max Response Time: 109.3514
+

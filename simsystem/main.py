@@ -60,8 +60,13 @@ def main(cfg: ExperimentConfig) -> None:
     
     # Generate outputs
     os.makedirs(f"{cfg.files.results_dir}/{cfg.files.test_case}", exist_ok=True)
-    output_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.output}"
-    detailed_report_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.report}"
+    
+    if cfg.settings.optimize:
+        output_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.output}Optimized.csv"
+        detailed_report_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.report}Optimized.txt"
+    else:
+        output_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.output}.csv"
+        detailed_report_path = f"{cfg.files.results_dir}/{cfg.files.test_case}/{cfg.files.report}.txt"
     
     output_gen = OutputGenerator(system, analysis_results, simulation_results)
     output_gen.generate_csv_output(output_path)

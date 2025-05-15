@@ -1,5 +1,5 @@
 
-CONFIG := experiment.yaml
+CONFIG := experiment1.yaml
 
 # Install dependencies
 install:
