@@ -164,3 +164,6 @@ outputs/*
 
 logs/*
 !logs/.gitkeep
+
+results/*
+!results/.gitkeep
