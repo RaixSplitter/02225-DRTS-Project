@@ -2,7 +2,7 @@ Hierarchical Schedulability Analysis Report by Analysis Engine
 =========================================
 
 Core: Core_1
-  Schedulable: False
+  Schedulable: True
   Utilization: 1.0000
 
 Component Analysis:

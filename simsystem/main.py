@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 cs = ConfigStore.instance()
 cs.store(name="experiment_config", node=ExperimentConfig)
 
-@hydra.main(version_base=None, config_path="../conf", config_name="experiment")
+@hydra.main(version_base=None, config_path="../conf", config_name="experiment3")
 def main(cfg: ExperimentConfig) -> None:
     """
     Main function to run the hierarchical schedulability analysis.

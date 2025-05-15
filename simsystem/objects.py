@@ -137,6 +137,7 @@ class Job:
         """Calculate the response time of the job."""
         if self.completion_time is None:
             return None
+        
         return self.completion_time - self.release_time
     
     def __lt__(self, other):
