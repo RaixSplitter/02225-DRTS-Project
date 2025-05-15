@@ -313,7 +313,7 @@ class AnalysisEngine:
             print("Delta was 0, adding eps")
             best_delta = 1e-6
         best_cost = c1 * best_alpha + c2 * (1.0 / best_delta)
-        
+               
         # Simple optimization: incrementally increase alpha until schedulable
         alpha = initial_alpha
         while alpha <= 1.0:
@@ -473,7 +473,7 @@ class OutputGenerator:
             Path to the generated output file.
         """
         print(f"Generating detailed report to {output_file}...")
-        with open(output_file, "w") as f:
+        with open(output_file, "w", encoding='utf-8') as f:
             f.write("Hierarchical Schedulability Analysis Report\n")
             f.write("=========================================\n\n")
             
@@ -515,7 +515,7 @@ def main():
     """
     Main function to run the hierarchical schedulability analysis.
     """
-    test_case = "3-medium-test-case"
+    test_case = "4-large-test-case"
     parser = argparse.ArgumentParser(description='Hierarchical Schedulability Analysis System')
     parser.add_argument('--tasks', default=f'test-cases/{test_case}/tasks.csv', help='Tasks CSV file')
     parser.add_argument('--architecture', default=f'test-cases/{test_case}/architecture.csv', help='Architecture CSV file')
