@@ -1,4 +1,4 @@
-# 02225-Distributed-Real-Time-Systems Exercise
+# 02225-Distributed-Real-Time-Systems Project
 
 ## Overview
 
@@ -36,6 +36,17 @@ For convenience, a Makefile is provided to run the demo. The demo can be run wit
 make run
 ```
 
+To specify a different config file, use the `CONFIG` variable:
+
+```bash
+make run CONFIG=<config_name>
+```
+
+i. e., which is the default call
+```bash
+make run CONFIG=experiment
+```
+
 ### Running demos with Python
 
 To run an experiment with Python, run the following command:
@@ -50,22 +61,11 @@ Notice that one can specify it's own config file by using the `--config-name` fl
 python simsystem/run.py --config-name <config_name>
 ```
 
-The run script scans the specified tasks folder for all csv files and runs an experiment on all tasks. The results are saved in the specified outputs folder. As per default the results are saved in the `simsystem/outputs` folder.
+The run script scans the specified tasks folder for all csv files and runs an experiment on all tasks. The results are saved in the specified outputs folder. As per default the results are saved in the `results` folder.
 
-Notice that each task file gets it's own output file.
+Notice that each task file gets it's own output folder.
 
 ### Logging
 
 Log files can be found in the `outputs` folder and are generated and managed by Hydra.
-
-
-
-### TODO List
-
-- [ ] Input Model
-- [ ] Simulator (Hierarchical Scheduling) [COMPOSITIONAL FRAMEWORK FOR HSS] Section 3.3
-- [ ] Implementation of Resource Supply Parameters
-- [ ] Reports of observed response times
-- [ ] Analysis tool BDR
-- [ ] DBFs: EDF FPS Schedulers
-- [ ] Supply bound function Section 3.3.2
+The recommended log is the report.log, which does not contain the debug information during development.
