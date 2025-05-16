@@ -455,6 +455,7 @@ class AnalysisEngine:
             )
             
             system_schedulable = utility_check and delay_check and all_components_schedulable
+            logger.info(f"{utility_check=}, {delay_check=}, {all_components_schedulable=}")
             
             results[core_id] = {
                 'schedulable': system_schedulable,
